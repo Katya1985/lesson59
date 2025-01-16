@@ -36,19 +36,28 @@ async def set_weight(message, state):
     await UserState.weight.set()
 
 
-@dp.message_handler(state= UserState.weight)
-async def send_calories(message, state):
-    await state.update_data(third= message.text)
+@dp.message_handler(state= UserState.gender)
+async def if_calories(message, state):
     data = await state.get_data()
-    await message.answer("Введите свой пол: мужской или женский")
-    await UserState.gender.set()
     if UserState.gender == "мужской":
         norma = int(10 * data(int['third']) + 6.25 * data(int['second']) - 5 * data(int['first']) + 5)
         await message.answer(f"Ваша норма калорий {norma}")
     else:
         norma = 10 * int(data['third']) + 6.25 * int(data['second']) - 5 * int(data['first']) - 161
         await message.answer(f"Ваша норма калорий {norma} ккал")
-        await state.finish()
+    await UserState.if_calories.set()
+    await state.finish()
+
+
+@dp.message_handler(commands= ['start'])
+async def start_message(message):
+    await message.answer("Привет! Я бот помогающий твоему здоровью. \n"
+                         "Введите слово Calories")
+
+
+@dp.message_handler()
+async def all_message(message):
+    await message.answer("Введите команду /start, чтобы начать общение.")
 
 
 if __name__ == "__main__":
